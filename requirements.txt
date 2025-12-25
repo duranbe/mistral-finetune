@@ -7,3 +7,4 @@ tensorboard
 tqdm
 torch
 triton
+xformers
