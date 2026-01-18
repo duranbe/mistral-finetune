@@ -37,6 +37,11 @@ def main_logger_info(message: str) -> None:
         logger.info(message)
 
 
+def main_logger_debug(message: str) -> None:
+    if dist.is_initialized() and get_rank() == 0:
+        logger.debug(message)
+
+
 def load_file(path: Path, world_size: int, rank: int) -> List[str]:
     lines = []
     with path.open() as f:
@@ -55,7 +60,7 @@ def maybe_load_local_dataset(
     if path in _LOADED_DATASETS:
         return _LOADED_DATASETS[path]
 
-    main_logger_info(f"Loading {path} ...")
+    main_logger_debug(f"Loading {path} ...")
     lines: List[str] = load_file(path, rank=rank, world_size=world_size)
 
     if chunk:
@@ -72,7 +77,7 @@ def maybe_load_local_dataset(
         )
         tokens_list.append(token_sample)
 
-    main_logger_info(f"{path} loaded and tokenized.")
+    main_logger_debug(f"{path} loaded and tokenized.")
     _LOADED_DATASETS[path] = tokens_list
 
     return _LOADED_DATASETS[path]
@@ -355,7 +360,7 @@ def get_dataset_iterator(
                     )
                 else:
                     # will read data on-the-fly and yield
-                    main_logger_info(f"Lazily loading {jsonl_file} ...")
+                    main_logger_debug(f"Lazily loading {jsonl_file} ...")
                     yield from lazy_load_and_yield(
                         jsonl_file,
                         rank=rank,
@@ -394,7 +399,7 @@ def preload_and_yield(
     if sample_type == SampleType.PRETRAIN:
         assert chunk_dataset is False, "Pretrain data should not have chunking enabled."
 
-    main_logger_info(f"Shuffling {jsonl_file} ...")
+    main_logger_debug(f"Shuffling {jsonl_file} ...")
     rng.shuffle(tokens_list)  # type: ignore
 
     for token_sample in tokens_list:
