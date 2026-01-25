@@ -183,7 +183,10 @@ def main(args):
         datasets_proportion = dict(zip(datasets, weights))
         num_tokens = {k: 0 for k in datasets_proportion}
 
-        for data_type, dataset in tqdm(zip(data_types, datasets)):
+        for data_type, dataset in tqdm(
+            zip(data_types, datasets),
+            mininterval=1.0,
+        ):
             # verify_size(Path(dataset))
             print(f"Validating {dataset} ...")
 
@@ -198,7 +201,11 @@ def main(args):
             # Load the dataset
             with open(dataset, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-                for idx, line in tqdm(enumerate(lines), total=len(lines)):
+                for idx, line in tqdm(
+                    enumerate(lines),
+                    total=len(lines),
+                    mininterval=1.0,
+                ):
                     try:
                         data = json.loads(line)
                     except ValueError as e:

@@ -22,7 +22,7 @@ def merge_checkpoints(
         "lora_A" in k or "lora_B" in k for k in keys_to_update
     ), "No `lora` keys found in your checkpoint. Check that `lora_ckpt` is correct."
 
-    for key in tqdm.tqdm(keys_to_update):
+    for key in tqdm.tqdm(keys_to_update, mininterval=1.0):
         if "norm" in key:
             model_checkpoint[key] = lora_checkpoint[key].to("cpu")
         else:
@@ -38,7 +38,7 @@ def merge_checkpoints(
             model_checkpoint[weight_name] = weight.to("cpu")
 
     # cast all tensors to save dtype
-    for key in tqdm.tqdm(model_checkpoint.keys()):
+    for key in tqdm.tqdm(model_checkpoint.keys(), mininterval=1.0):
         model_checkpoint[key] = model_checkpoint[key].to(save_dtype)
 
 
